@@ -23,7 +23,7 @@ export class RayTracing {
 				}
 				buffer[i] = color;
 			}
-			bottomY = (bottomY + height / 200 * 5) % (height + 2 * radius);
-		}, 1000 / 30);
+			bottomY = (bottomY + height / 400 * 5) % (height + 2 * radius);
+		}, 1000 / 60);
 	}
 }

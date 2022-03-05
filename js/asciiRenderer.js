@@ -23,7 +23,7 @@ function printBuffer(buffer) {
 		if ((i+1) % width == 0)
 			s += "\n";
 	}
-	console.log(s);
+	console.log(s + "\x1B[0;0H");
 }
 
 // this is our tick function:
@@ -35,3 +35,8 @@ setInterval(() => {
 
 // the ray tracing engine gets given the pixel buffer to draw to:
 const rayTracing = new RayTracing(pixelBuffer, width, height);
+
+process.on('SIGINT', () => {
+	console.log(`\x1B[${height+2};0H`);
+	process.exit();
+});

@@ -15,7 +15,7 @@ export class RayTracing {
 			const x = i % width;
 			const y = Math.floor(i / width);
 			if ((x - centerX)**2 + (y - centerY)**2 <= radius**2)
-				color = 0xff0000ff;
+				color = 0xff0000ff; // RED
 			buffer[i] = color;
 		}
 	}

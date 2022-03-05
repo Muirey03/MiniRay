@@ -1,0 +1,21 @@
+{
+  "name": "miniray",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/asciiRenderer.js",
+  "type": "module",
+  "scripts": {
+    "start": "node js/asciiRenderer.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Muirey03/MiniRay.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Muirey03/MiniRay/issues"
+  },
+  "homepage": "https://github.com/Muirey03/MiniRay#readme"
+}

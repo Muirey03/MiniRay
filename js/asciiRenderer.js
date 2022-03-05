@@ -1,11 +1,12 @@
 import { RayTracing } from './rayTracing.js';
 
-const width = 50;
-const height = 30;
+const width = 150;
+const height = 50;
 let pixelBuffer = new Uint32Array(width * height);
 
 function printBuffer(buffer) {
-	const densityStr = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+	//const densityStr = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+	const densityStr = '@%#*+=-:. ';
 
 	console.log("\x1B[0;0H"); // reset cursor to 0,0
 	let s = "";
@@ -16,7 +17,7 @@ function printBuffer(buffer) {
 		const b = (abgr & 0xff0000) >> 16;
 		const avg = (r + g + b) / 3;
 		const idx = Math.ceil((1 - (avg / 0xff)) * (densityStr.length - 1));
-		s += densityStr[idx] + " ";
+		s += densityStr[idx] + densityStr[idx];
 
 		// print newline:
 		if ((i+1) % width == 0)

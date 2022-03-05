@@ -1,7 +1,7 @@
 import { RayTracing } from './rayTracing.js';
 
-const width = 150;
-const height = 50;
+const width = Math.floor(process.stdout.columns / 2) - 10;
+const height = process.stdout.rows - 10;
 let pixelBuffer = new Uint32Array(width * height);
 
 function printBuffer(buffer) {

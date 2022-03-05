@@ -7,20 +7,23 @@ export class RayTracing {
 		this.height = height;
 
 		// DEBUG: draw a gradient circle:
-		const centerX = width / 2;
-		const centerY = height / 2;
 		const radius = height / 4;
-		for (let i = 0; i < buffer.length; i++) {
-			let color = 0xff000000;
-			const x = i % width;
-			const y = Math.floor(i / width);
-			if ((x - centerX)**2 + (y - centerY)**2 <= radius**2)
-			{
-				const brightness = (y - (height / 2 - radius)) / (2 * radius);
-				const c = Math.floor(0xff * brightness);
-				color = 0xff000000 + (c << 16) + (c << 8) + c;
+		const centerX = width / 2;
+		let bottomY = 0;
+		setInterval(() => {
+			for (let i = 0; i < buffer.length; i++) {
+				let color = 0xff808080;
+				const x = i % width;
+				const y = Math.floor(i / width);
+				if ((x - centerX)**2 + (y - (bottomY - radius))**2 <= radius**2)
+				{
+					const brightness = (y - (bottomY - 2* radius)) / (2 * radius);
+					const c = Math.floor(0xff * brightness);
+					color = 0xff000000 + (c << 16) + (c << 8) + c;
+				}
+				buffer[i] = color;
 			}
-			buffer[i] = color;
-		}
+			bottomY = (bottomY + height / 200 * 5) % (height + 2 * radius);
+		}, 1000 / 30);
 	}
 }

@@ -12,7 +12,7 @@ export class RayTracing {
 		let bottomY = 0;
 		setInterval(() => {
 			for (let i = 0; i < buffer.length; i++) {
-				let color = 0xff808080;
+				let color = 0xff000000;
 				const x = i % width;
 				const y = Math.floor(i / width);
 				if ((x - centerX)**2 + (y - (bottomY - radius))**2 <= radius**2)

@@ -8,8 +8,8 @@ function printBuffer(buffer) {
 	//const densityStr = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
 	const densityStr = '@%#*+=-:. ';
 
-	console.log("\x1B[0;0H"); // reset cursor to 0,0
-	let s = "";
+	console.log('\x1B[0;0H'); // reset cursor to 0,0
+	let s = '';
 	for (let i = 0; i < buffer.length; i++) {
 		const abgr = buffer[i];
 		const r = abgr & 0xff;
@@ -21,9 +21,9 @@ function printBuffer(buffer) {
 
 		// print newline:
 		if ((i+1) % width == 0)
-			s += "\n";
+			s += '\n';
 	}
-	console.log(s + "\x1B[0;0H");
+	console.log(s + '\x1B[0;0H');
 }
 
 // this is our tick function:
@@ -34,7 +34,7 @@ setInterval(() => {
 }, 1000 / FPS);
 
 // the ray tracing engine gets given the pixel buffer to draw to:
-const rayTracing = new RayTracing(pixelBuffer, width, height);
+new RayTracing(pixelBuffer, width, height);
 
 process.on('SIGINT', () => {
 	console.log(`\x1B[${height+2};0H`);

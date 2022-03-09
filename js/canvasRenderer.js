@@ -1,6 +1,6 @@
 import { RayTracing } from './rayTracing.js';
 
-const canvas = document.querySelector("#canvas");
+const canvas = document.querySelector('#canvas');
 const width = canvas.width;
 const height = canvas.height;
 
@@ -15,4 +15,4 @@ setInterval(() => {
 }, 1000 / FPS);
 
 // the ray tracing engine gets given the pixel buffer to draw to:
-const rayTracing = new RayTracing(pixelBuffer, width, height);
+new RayTracing(pixelBuffer, width, height);

@@ -1,8 +1,10 @@
-// If solutions exist - returns an array of [solution1, solution2].
-// Else - returns [NaN, NaN].
+/**
+ * If solutions exist - returns an array of [solution1, solution2].
+ * Else - returns [NaN, NaN].
+ */
 function quadraticSolve(a, b, c) {
 	const discriminant = Math.sqrt(b * b - 4 * a * c);
-	const denominator = (2 * a);
+	const denominator = 2 * a;
 	const solution1 = (-b - discriminant) / denominator;
 	const solution2 = (-b + discriminant) / denominator;
 	return [solution1, solution2];

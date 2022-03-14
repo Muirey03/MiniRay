@@ -29,10 +29,10 @@ export function intersectVectorWithSphere(rayOrigin, rayVector, sphereCenter, sp
 	const distance1 = quadratricResult[0];
 	const distance2 = quadratricResult[1];
 	if (distance1 >= 0) { // Note this won't execute for NaN values.
-		intersections.push(unitRayVector.mul(distance1).add(rayOrigin));
+		intersections.push({point: unitRayVector.mul(distance1).add(rayOrigin), distance: distance1});
 	}
 	if (distance2 >= 0) { // Note this won't execute for NaN values.
-		intersections.push(unitRayVector.mul(distance2).add(rayOrigin));
+		intersections.push({point: unitRayVector.mul(distance2).add(rayOrigin), distance: distance2});
 	}
 
 	return intersections;

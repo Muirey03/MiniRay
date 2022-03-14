@@ -6,7 +6,7 @@ const height = canvas.height;
 
 const ctx = canvas.getContext('2d');
 const pixelData = ctx.createImageData(width, height);
-let pixelBuffer = new Uint32Array(pixelData.data.buffer);
+const pixelBuffer = new Uint32Array(pixelData.data.buffer);
 
 // this is our tick function:
 const FPS = 60;

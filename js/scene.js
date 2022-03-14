@@ -1,9 +1,9 @@
 export class Scene {
-	constructor() {
+	constructor () {
 		this.objects = new Set();
 	}
 
-	addObject(obj) {
+	addObject (obj) {
 		this.objects.add(obj);
 		obj.scene = this;
 	}

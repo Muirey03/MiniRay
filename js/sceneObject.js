@@ -1,9 +1,9 @@
 export class SceneObject {
-	constructor(pos) {
+	constructor (pos) {
 		this.pos = pos;
 	}
 
-	rayIntersection(ray) {
+	rayIntersection (ray) {
 		return null;
 	}
 }

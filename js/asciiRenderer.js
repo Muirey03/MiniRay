@@ -2,10 +2,10 @@ import { RayTracing } from './rayTracing.js';
 
 const width = Math.floor(process.stdout.columns / 2) - 10;
 const height = process.stdout.rows - 10;
-let pixelBuffer = new Uint32Array(width * height);
+const pixelBuffer = new Uint32Array(width * height);
 
-function printBuffer(buffer) {
-	//const densityStr = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+function printBuffer (buffer) {
+	// const densityStr = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
 	const densityStr = '@%#*+=-:. ';
 
 	console.log('\x1B[0;0H'); // reset cursor to 0,0
@@ -20,8 +20,7 @@ function printBuffer(buffer) {
 		s += densityStr[idx] + densityStr[idx];
 
 		// print newline:
-		if ((i+1) % width == 0)
-			s += '\n';
+		if ((i + 1) % width === 0) { s += '\n'; }
 	}
 	console.log(s + '\x1B[0;0H');
 }
@@ -37,6 +36,6 @@ setInterval(() => {
 new RayTracing(pixelBuffer, width, height);
 
 process.on('SIGINT', () => {
-	console.log(`\x1B[${height+2};0H`);
+	console.log(`\x1B[${height + 2};0H`);
 	process.exit();
 });

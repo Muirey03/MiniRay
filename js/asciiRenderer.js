@@ -33,7 +33,7 @@ setInterval(() => {
 }, 1000 / FPS);
 
 // the ray tracing engine gets given the pixel buffer to draw to:
-new RayTracing(pixelBuffer, width, height);
+new RayTracing(pixelBuffer, width, height); // eslint-disable-line no-new
 
 process.on('SIGINT', () => {
 	console.log(`\x1B[${height + 2};0H`);

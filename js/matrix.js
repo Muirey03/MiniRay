@@ -8,11 +8,11 @@ export class Matrix {
 	}
 
 	add (other) {
-		return new Vector(this.col1.add(other.col1), this.col2.add(other.col2), this.col3.add(other.col3));
+		return new Matrix(this.col1.add(other.col1), this.col2.add(other.col2), this.col3.add(other.col3));
 	}
 
 	sub (other) {
-		return new Vector(this.col1.sub(other.col1), this.col2.sub(other.col2), this.col3.sub(other.col3));
+		return new Matrix(this.col1.sub(other.col1), this.col2.sub(other.col2), this.col3.sub(other.col3));
 	}
 
 	vectMul (vect) {
@@ -21,5 +21,21 @@ export class Matrix {
 
 	scaleMul (scalar) {
 		return new Vector(this.col1.mul(scalar), this.col2.mul(scalar), this.col3.mul(scalar));
+	}
+
+	static xRotation (theta) {
+		return new Matrix(new Vector(1, 0, 0), new Vector(0, Math.cos(theta), Math.sin(theta)), new Vector(0, -Math.sin(theta), Math.cos(theta)));
+	}
+
+	static yRotation (theta) {
+		return new Matrix(new Vector(Math.cos(theta), 0, -Math.sin(theta)), new Vector(0, 1, 0), new Vector(Math.sin(theta), 0, Math.cos(theta)));
+	}
+
+	static zRotation (theta) {
+		return new Matrix(new Vector(Math.cos(theta), Math.sin(theta), 0), new Vector(-Math.sin(theta), Math.cos(theta), 0), new Vector(0, 0, 1));
+	}
+
+	static get identity () {
+		return new Matrix(new Vector(1, 0, 0), new Vector(0, 1, 0), new Vector(0, 0, 1));
 	}
 }

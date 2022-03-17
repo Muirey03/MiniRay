@@ -24,8 +24,8 @@ export class Camera {
 				// currentDir = zRot.vectMul(currentDir);
 				// fn(x, y, currentDir);
 
-				const yRot = -yViewArea * (x / width - 0.5);
-				const zRot = -zViewArea * (y / height - 0.5);
+				const yRot = -yViewArea * Math.atan(x / width - 0.5);
+				const zRot = -zViewArea * Math.atan(y / height - 0.5);
 
 				// FIXME: Slow.
 				const dir = this.rotMatrix.vectMul(Matrix.yRotation(yRot).vectMul(Matrix.zRotation(zRot).vectMul(new Vector(1, 0, 0))));

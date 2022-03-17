@@ -1,25 +1,34 @@
+import { Matrix } from './matrix.js';
 import { Vector } from './vector.js';
 
 export class Camera {
-	constructor (pos, dir /* TODO: replace with xRot, yRot */, FOV) {
+	constructor (pos, rotMatrix, FOV) {
 		this.pos = pos;
-		this.direction = dir;
+		this.rotMatrix = rotMatrix;
 		this.FOV = FOV;
 
 		// TODO: this.rotationMatrix = ...
 	}
 
 	iterateDirectionVectors (width, height, fn) {
-		const xViewArea = Math.tan(this.FOV);
-		const yViewArea = xViewArea * (height / width);
-		for (let x = 0; x < width; x++) {
-			for (let y = 0; y < height; y++) {
-				const xShift = (x / width - 0.5) * xViewArea;
-				const yShift = (y / height - 0.5) * yViewArea;
+		const zViewArea = this.FOV;
+		const yViewArea = zViewArea * (width / height);
 
-				// TODO: don't just add, mul by rot matrix instead
-				// What we are currently doing creates weird stretches on the edges
-				const dir = new Vector(0, xShift, yShift).add(this.direction);
+		// let currentDir = this.rotMatrix.vectMul(Matrix.yRotation(-0.5 * yViewArea).vectMul(Matrix.zRotation(-0.5 * zViewArea).vectMul(new Vector(1, 0, 0))));
+		// const yRot = Matrix.yRotation(yViewArea / width);
+		// const zRot = Matrix.zRotation(zViewArea / height);
+
+		for (let x = 0; x < width; x++) {
+			// currentDir = yRot.vectMul(currentDir);
+			for (let y = 0; y < height; y++) {
+				// currentDir = zRot.vectMul(currentDir);
+				// fn(x, y, currentDir);
+
+				const yRot = -yViewArea * (x / width - 0.5);
+				const zRot = -zViewArea * (y / height - 0.5);
+
+				// FIXME: Slow.
+				const dir = this.rotMatrix.vectMul(Matrix.yRotation(yRot).vectMul(Matrix.zRotation(zRot).vectMul(new Vector(1, 0, 0))));
 				fn(x, y, dir);
 			}
 		}

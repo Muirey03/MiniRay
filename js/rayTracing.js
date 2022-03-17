@@ -4,6 +4,7 @@ import { Scene } from './scene.js';
 import { SphereObject } from './sphereObject.js';
 import { Vector } from './vector.js';
 import { Camera } from './camera.js';
+import { Matrix } from './matrix.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
@@ -48,11 +49,11 @@ export class RayTracing {
 	createScene () {
 		this.scene = new Scene();
 		const sphere1 = new SphereObject(new Vector(2, 0, 0), 0.5);
-		const sphere2 = new SphereObject(new Vector(3, 0.7, 0), 0.5);
+		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		const FOV = (60 / 360) * 2 * Math.PI;
 		// TODO: init camera with x and y rotations that it can use to form its rotation matrix
-		this.camera = new Camera(Vector.zero, new Vector(1, 0, 0), FOV);
+		this.camera = new Camera(Vector.zero, Matrix.xRotation(0), FOV);
 	}
 }

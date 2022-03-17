@@ -53,7 +53,6 @@ export class RayTracing {
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		const FOV = (60 / 360) * 2 * Math.PI;
-		// TODO: init camera with x and y rotations that it can use to form its rotation matrix
-		this.camera = new Camera(Vector.zero, Matrix.xRotation(0), FOV);
+		this.camera = new Camera(Vector.zero, Matrix.xRotation(Math.PI / 2), FOV);
 	}
 }

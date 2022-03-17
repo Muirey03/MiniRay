@@ -25,8 +25,15 @@ export class Vector {
 		return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
 	}
 
+	/**
+	 *  Distance between this vector and another vector when both are treated as position vectors.
+	 */
+	distance (other) {
+		return Math.sqrt((this.x - other.x) ** 2 + (this.y - other.y) ** 2 + (this.z - other.z) ** 2);
+	}
+
 	get magnitude () {
-		return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2);
+		return this.distance(Vector.zero);
 	}
 
 	normalized (desiredMagnitude = 1) {

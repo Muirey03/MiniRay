@@ -1,4 +1,3 @@
-import { Matrix } from './matrix.js';
 import { Vector } from './vector.js';
 
 export class Camera {
@@ -6,31 +5,27 @@ export class Camera {
 		this.pos = pos;
 		this.rotMatrix = rotMatrix;
 		this.FOV = FOV;
-
-		// TODO: this.rotationMatrix = ...
+		this.projDist = 1;
 	}
 
 	iterateDirectionVectors (width, height, fn) {
-		const zViewArea = this.FOV;
-		const yViewArea = zViewArea * (width / height);
-
-		// let currentDir = this.rotMatrix.vectMul(Matrix.yRotation(-0.5 * yViewArea).vectMul(Matrix.zRotation(-0.5 * zViewArea).vectMul(new Vector(1, 0, 0))));
-		// const yRot = Matrix.yRotation(yViewArea / width);
-		// const zRot = Matrix.zRotation(zViewArea / height);
-
+		// DEBUG CODE: let prevDir = Vector.zero;
+		const viewWidth = 2 * Math.tan(this.FOV / 2) * this.projDist;
+		const verticalFOV = 2 * Math.atan(Math.tan(this.FOV / 2) * height / width);
+		const viewHeight = 2 * Math.tan(verticalFOV / 2) * this.projDist;
 		for (let x = 0; x < width; x++) {
-			// currentDir = yRot.vectMul(currentDir);
 			for (let y = 0; y < height; y++) {
-				// currentDir = zRot.vectMul(currentDir);
-				// fn(x, y, currentDir);
-
-				const yRot = -yViewArea * Math.atan(x / width - 0.5);
-				const zRot = -zViewArea * Math.atan(y / height - 0.5);
-
-				// FIXME: Slow.
-				const dir = this.rotMatrix.vectMul(Matrix.yRotation(yRot).vectMul(Matrix.zRotation(zRot).vectMul(new Vector(1, 0, 0))));
+				const dir = this.rotMatrix.vectMul(new Vector(1, (x / width - 0.5) * viewWidth, (y / height - 0.5) * viewHeight));
+				/* DEBUG CODE:
+				if (x === 0 || y === 0) {
+					const newDir = dir.mul(1 / dir.x);
+					console.log(newDir.distance(prevDir));
+					prevDir = newDir;
+				}
+				*/
 				fn(x, y, dir);
 			}
 		}
+		console.log(height);
 	}
 }

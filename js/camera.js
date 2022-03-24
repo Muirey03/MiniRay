@@ -17,6 +17,5 @@ export class Camera {
 				fn(x, y, dir);
 			}
 		}
-		console.log(height);
 	}
 }

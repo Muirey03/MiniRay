@@ -5,10 +5,10 @@ import { SphereObject } from './sphereObject.js';
 import { Vector } from './vector.js';
 import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
-import { pointLightObject } from './pointLightObject.js';
+import { PointLightObject } from './pointLightObject.js';
 
 export class RayTracing {
-	constructor(buffer, width, height) {
+	constructor (buffer, width, height) {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
@@ -20,7 +20,7 @@ export class RayTracing {
 		this.renderScene();
 	}
 
-	raycast(origin, direction) {
+	raycast (origin, direction) {
 		let closest = null;
 		for (const obj of this.scene.objects) {
 			const hit = obj.rayIntersection({ origin: origin, direction: direction });
@@ -31,20 +31,20 @@ export class RayTracing {
 		return closest;
 	}
 
-	computeLight(point, surfaceNorm) {
+	computeLight (point, surfaceNorm) {
 		let totalIllum = 0;
 		// Check how much light every scene light contributes to the point
 		for (const light of this.scene.lights) {
-			let VectToLight = light.pos.sub(point);
-			let contribution = light.intensity * surfaceNorm.dot(VectToLight) / (VectToLight.magnitude);
+			const VectToLight = light.pos.sub(point);
+			const contribution = light.intensity * surfaceNorm.dot(VectToLight) / (VectToLight.magnitude);
 			if (contribution > 0) {
 				totalIllum += contribution;
 			}
 		}
-		return totalIllum
+		return totalIllum;
 	}
 
-	renderScene() {
+	renderScene () {
 		const cameraPos = this.camera.pos;
 		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
 			// We need raycast to also give us the sphere it intersected closest
@@ -55,21 +55,20 @@ export class RayTracing {
 				this.buffer[y * this.width + x] = 0xffffffff;
 
 				// TODO Work out which index of hits to use
-				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized()
-				let illum = this.computeLight(hit.hits[0].point, surfaceNorm)
+				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized();
+				const illum = this.computeLight(hit.hits[0].point, surfaceNorm);
 				// TODO rework to do (object colour)*(illumination) instead
-				this.buffer[y * this.width + x] = 0xff000000 + illum*300;
-
+				this.buffer[y * this.width + x] = 0xff000000 + illum * 300;
 			} else { this.buffer[y * this.width + x] = 0xff000000; }
 		});
 	}
 
-	createScene() {
+	createScene () {
 		this.scene = new Scene();
 		const sphere1 = new SphereObject(new Vector(2, 0, -1), 0.5);
 		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5);
 		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10);
-		const light1 = new pointLightObject(new Vector(3, 0, 0), 0.5);
+		const light1 = new PointLightObject(new Vector(3, 0, 0), 0.5);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);

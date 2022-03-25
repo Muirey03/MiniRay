@@ -1,8 +1,8 @@
 import { SceneObject } from './sceneObject.js';
 
-export class pointLightObject extends SceneObject {
+export class PointLightObject extends SceneObject {
 	constructor (pos, intensity) {
 		super(pos);
-        this.intensity = intensity;
+		this.intensity = intensity;
 	}
 }

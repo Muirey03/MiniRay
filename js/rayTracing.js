@@ -13,7 +13,6 @@ export class RayTracing {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
-		this.baseCol = new ColourVector(255, 0, 255);
 		this.black = new ColourVector(0, 0, 0);
 
 		// create our scene
@@ -50,25 +49,26 @@ export class RayTracing {
 	renderScene () {
 		const cameraPos = this.camera.pos;
 		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
-			// We need raycast to also give us the sphere it intersected closest
 			const hit = this.raycast(cameraPos, dir);
 
 			// DEBUG code for colouring the spheres. This is wrong, we should be treating the camera as a light source and using distance etc etc:
 			if (hit) {
+				// Assuming all light is white and that distance does not affect light sensitivity
+
 				// Index 0 always has the lowest distance, subtracts discriminant
 				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized();
 				const illum = this.computeLight(hit.hits[0].point, surfaceNorm);
 
-				this.buffer[y * this.width + x] = (this.baseCol.mul(illum)).getColour();
+				this.buffer[y * this.width + x] = (hit.object.colour.mul(illum)).getColour();
 			} else { this.buffer[y * this.width + x] = this.black.getColour(); }
 		});
 	}
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(2, 1, -1), 0.5);
-		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5);
-		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10);
+		const sphere1 = new SphereObject(new Vector(2, 1, -1), 0.5, new ColourVector(255, 0, 255));
+		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5, new ColourVector(0, 255, 0));
+		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10, new ColourVector(0, 0, 255));
 		const light1 = new PointLightObject(new Vector(3, 0, 0), 0.5);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);

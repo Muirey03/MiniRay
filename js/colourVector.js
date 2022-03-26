@@ -10,6 +10,7 @@ export class ColourVector {
 	}
 
 	getColour () {
+		// (alpha)(R)(G)(B)
 		return ((255 * (16 ** 6)) + (this.r * (16 ** 4)) + (this.g * (16 ** 2)) + this.b);
 	}
 }

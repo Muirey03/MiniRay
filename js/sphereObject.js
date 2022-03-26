@@ -2,8 +2,8 @@ import { SceneObject } from './sceneObject.js';
 import { intersectVectorWithSphere } from './rayMath.js';
 
 export class SphereObject extends SceneObject {
-	constructor (pos, radius) {
-		super(pos);
+	constructor (pos, radius, colour) {
+		super(pos, colour);
 		this.radius = radius;
 	}
 

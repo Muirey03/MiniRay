@@ -6,12 +6,15 @@ import { Vector } from './vector.js';
 import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
 import { PointLightObject } from './pointLightObject.js';
+import { ColourVector } from './colourVector.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
+		this.baseCol = new ColourVector(255, 0, 255);
+		this.black = new ColourVector(0, 0, 0);
 
 		// create our scene
 		this.createScene();
@@ -52,20 +55,18 @@ export class RayTracing {
 
 			// DEBUG code for colouring the spheres. This is wrong, we should be treating the camera as a light source and using distance etc etc:
 			if (hit) {
-				this.buffer[y * this.width + x] = 0xffffffff;
-
-				// TODO Work out which index of hits to use
+				// Index 0 always has the lowest distance, subtracts discriminant
 				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized();
 				const illum = this.computeLight(hit.hits[0].point, surfaceNorm);
-				// TODO rework to do (object colour)*(illumination) instead
-				this.buffer[y * this.width + x] = 0xff000000 + illum * 300;
-			} else { this.buffer[y * this.width + x] = 0xff000000; }
+
+				this.buffer[y * this.width + x] = (this.baseCol.mul(illum)).getColour();
+			} else { this.buffer[y * this.width + x] = this.black.getColour(); }
 		});
 	}
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(2, 0, -1), 0.5);
+		const sphere1 = new SphereObject(new Vector(2, 1, -1), 0.5);
 		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5);
 		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10);
 		const light1 = new PointLightObject(new Vector(3, 0, 0), 0.5);

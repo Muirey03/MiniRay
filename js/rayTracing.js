@@ -38,7 +38,7 @@ export class RayTracing {
 		// Check how much light every scene light contributes to the point
 		for (const light of this.scene.lights) {
 			const VectToLight = light.pos.sub(point);
-			const contribution = light.intensity * surfaceNorm.dot(VectToLight) / (VectToLight.magnitude);
+			const contribution = (light.intensity * surfaceNorm.dot(VectToLight)) / (VectToLight.magnitude);
 			if (contribution > 0) {
 				totalIllum += contribution;
 			}
@@ -66,14 +66,16 @@ export class RayTracing {
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(2, 1, -1), 0.5, new ColourVector(255, 0, 255));
+		const sphere1 = new SphereObject(new Vector(2, 0.5, -1), 0.5, new ColourVector(255, 0, 255));
 		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5, new ColourVector(0, 255, 0));
 		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10, new ColourVector(0, 0, 255));
-		const light1 = new PointLightObject(new Vector(3, 0, 0), 0.5);
+		const light1 = new PointLightObject(new Vector(3, 0, 0), 1);
+		const light2 = new PointLightObject(new Vector(3, 0, 2), 1);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
 		this.scene.addLight(light1);
+		this.scene.addLight(light2);
 		const FOV = (60 / 360) * 2 * Math.PI;
 		this.camera = new Camera(Vector.zero, Matrix.xRotation(Math.PI / 2), FOV);
 	}

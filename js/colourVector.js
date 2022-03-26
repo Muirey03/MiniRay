@@ -3,10 +3,18 @@ export class ColourVector {
 		this.r = r;
 		this.g = g;
 		this.b = b;
+		// Taken from https://www.webtips.dev/webtips/javascript/how-to-clamp-numbers-in-javascript
+		this.clamp = (num, min, max) => {
+			return Math.min(Math.max(num, min), max);
+		};
 	}
 
 	mul (scalar) {
-		return new ColourVector(Math.round(this.r * scalar), Math.round(this.g * scalar), Math.round(this.b * scalar));
+		// Restrict RGB channels between 0 and 255
+		const newR = this.clamp(Math.round(this.r * scalar), 0, 255);
+		const newG = this.clamp(Math.round(this.g * scalar), 0, 255);
+		const newB = this.clamp(Math.round(this.b * scalar), 0, 255);
+		return new ColourVector(newR, newG, newB);
 	}
 
 	getColour () {

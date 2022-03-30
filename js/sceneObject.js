@@ -1,9 +1,9 @@
-import { ColourVector } from './colourVector.js';
+import { ColorVector } from './colorVector.js';
 
 export class SceneObject {
-	constructor (pos, colour = new ColourVector(0, 0, 0)) {
+	constructor (pos, color = new ColorVector(0, 0, 0)) {
 		this.pos = pos;
-		this.colour = colour;
+		this.color = color;
 	}
 
 	rayIntersection (ray) {

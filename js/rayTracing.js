@@ -5,15 +5,15 @@ import { SphereObject } from './sphereObject.js';
 import { Vector } from './vector.js';
 import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
-import { PointLightObject } from './pointLightObject.js';
-import { ColourVector } from './colourVector.js';
+import { DirectionalLight, PointLight } from './Light.js';
+import { ColorVector } from './colorVector.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
-		this.black = new ColourVector(0, 0, 0);
+		this.black = new ColorVector(0, 0, 0);
 
 		// create our scene
 		this.createScene();
@@ -35,10 +35,12 @@ export class RayTracing {
 
 	computeLight (point, surfaceNorm) {
 		let totalIllum = 0;
+		let contribution = 0;
+		let VectToLight = Vector.zero;
 		// Check how much light every scene light contributes to the point
 		for (const light of this.scene.lights) {
-			const VectToLight = light.pos.sub(point);
-			const contribution = (light.intensity * surfaceNorm.dot(VectToLight)) / (VectToLight.magnitude);
+			VectToLight = (light instanceof PointLight) ? light.pos.sub(point) : light.dir;
+			contribution = (light.intensity * surfaceNorm.dot(VectToLight)) / (VectToLight.magnitude);
 			if (contribution > 0) {
 				totalIllum += contribution;
 			}
@@ -51,7 +53,7 @@ export class RayTracing {
 		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
 			const hit = this.raycast(cameraPos, dir);
 
-			// DEBUG code for colouring the spheres. This is wrong, we should be treating the camera as a light source and using distance etc etc:
+			// DEBUG code for coloring the spheres. This is wrong, we should be treating the camera as a light source and using distance etc etc:
 			if (hit) {
 				// Assuming all light is white and that distance does not affect light sensitivity
 
@@ -59,21 +61,23 @@ export class RayTracing {
 				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized();
 				const illum = this.computeLight(hit.hits[0].point, surfaceNorm);
 
-				this.buffer[y * this.width + x] = (hit.object.colour.mul(illum)).getColour();
-			} else { this.buffer[y * this.width + x] = this.black.getColour(); }
+				this.buffer[y * this.width + x] = (hit.object.color.mul(illum)).getReverseHexColor();
+			} else { this.buffer[y * this.width + x] = this.black.getReverseHexColor(); }
 		});
 	}
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(2, 0.5, -1), 0.5, new ColourVector(255, 0, 255));
-		const sphere2 = new SphereObject(new Vector(3, 1, 1), 0.5, new ColourVector(0, 255, 0));
-		const sphere3 = new SphereObject(new Vector(10, -10, 0), 10, new ColourVector(0, 0, 255));
-		const light1 = new PointLightObject(new Vector(3, 0, 0), 1);
-		const light2 = new PointLightObject(new Vector(3, 0, 2), 1);
+		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 0, 255));
+		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0));
+		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255));
+		const sphere4 = new SphereObject(new Vector(10, -10, 0), 10, new ColorVector(0, 0, 255));
+		const light1 = new PointLight(new Vector(3, 0, -1.5), 0.5);
+		const light2 = new DirectionalLight(new Vector(0, 0, 1), 1);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
+		this.scene.addObject(sphere4);
 		this.scene.addLight(light1);
 		this.scene.addLight(light2);
 		const FOV = (60 / 360) * 2 * Math.PI;

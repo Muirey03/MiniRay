@@ -16,7 +16,7 @@ function printBuffer (buffer) {
 		const g = (abgr & 0xff00) >> 8;
 		const b = (abgr & 0xff0000) >> 16;
 		const avg = (r + g + b) / 3;
-		const idx = Math.ceil((1 - (avg / 0xff)) * (densityStr.length - 1));
+		const idx = Math.floor((1 - (avg / 0xff)) * (densityStr.length - 1));
 		s += densityStr[idx] + densityStr[idx];
 
 		// print newline:

@@ -71,11 +71,12 @@ export class RayTracing {
 				// Assuming all light is white and that distance does not affect light sensitivity
 
 				// Index 0 always has the lowest distance, subtracts discriminant
-				const hitToCamera = cameraPos.sub(hit.hits[0].point);
-				const surfaceNorm = hit.object.surfaceNormal(hit.hits[0].point);
-				const illum = this.computeLight(hit.hits[0].point, surfaceNorm, hitToCamera, hit.object.specular);
+				const point = hit.hits[0].point;
+				const hitToCamera = cameraPos.sub(point);
+				const surfaceNorm = hit.object.surfaceNormal(point);
+				const illum = this.computeLight(point, surfaceNorm, hitToCamera, hit.object.specular);
 
-				this.buffer[y * this.width + x] = (hit.object.color.mul(illum)).getReverseHexColor();
+				this.buffer[y * this.width + x] = (hit.object.colorAtPoint(point).mul(illum)).getReverseHexColor();
 			} else {
 				this.buffer[y * this.width + x] = ColorVector.black.getReverseHexColor();
 			}
@@ -87,7 +88,7 @@ export class RayTracing {
 		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 0, 255), 1000);
 		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 100);
 		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 1000);
-		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 0), -1);
+		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1);
 		const light1 = new PointLight(new Vector(2, 0, 0), 0.75);
 		const light2 = new DirectionalLight(new Vector(0, 0, 1), 1);
 		this.scene.addObject(sphere1);

@@ -3,8 +3,9 @@ import { intersectVectorWithSphere } from './rayMath.js';
 
 export class SphereObject extends SceneObject {
 	constructor (pos, radius, color, specular) {
-		super(pos, color, specular);
+		super(pos, specular);
 		this.radius = radius;
+		this.color = color;
 	}
 
 	rayIntersection (ray) {
@@ -14,5 +15,9 @@ export class SphereObject extends SceneObject {
 
 	surfaceNormal (point) {
 		return point.sub(this.pos).normalized();
+	}
+
+	colorAtPoint (point) {
+		return this.color;
 	}
 }

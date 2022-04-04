@@ -5,7 +5,7 @@ import { SphereObject } from './sphereObject.js';
 import { Vector } from './vector.js';
 import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
-import { DirectionalLight, PointLight } from './Light.js';
+import { DirectionalLight, PointLight } from './light.js';
 import { ColorVector } from './colorVector.js';
 
 export class RayTracing {
@@ -13,7 +13,6 @@ export class RayTracing {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
-		this.black = new ColorVector(0, 0, 0);
 
 		// create our scene
 		this.createScene();
@@ -35,27 +34,24 @@ export class RayTracing {
 
 	computeLight (point, surfaceNorm, vectToCamera, specular) {
 		let totalIllum = 0;
-		let mattScale = 0;
-		let specScale = 0;
-		let VectToLight = Vector.zero;
 		// Check how much light every scene light contributes to the point
 		for (const light of this.scene.lights) {
-			VectToLight = (light instanceof PointLight) ? light.pos.sub(point) : light.dir;
+			const vectToLight = (light instanceof PointLight) ? light.pos.sub(point) : light.dir;
 
 			// Taken from https://gabrielgambetta.com/computer-graphics-from-scratch/03-light.html
 
 			// Diffuse reflection
-			mattScale = surfaceNorm.dot(VectToLight) / (VectToLight.magnitude);
+			const mattScale = surfaceNorm.dot(vectToLight) / (vectToLight.magnitude);
 			if (mattScale > 0) {
 				totalIllum += light.intensity * mattScale;
 			}
 
 			// Specular reflection
 			if (specular !== -1) {
-				const ReflectedLightVect = (surfaceNorm.mul(2 * surfaceNorm.dot(VectToLight))).sub(VectToLight);
+				const ReflectedLightVect = (surfaceNorm.mul(2 * surfaceNorm.dot(vectToLight))).sub(vectToLight);
 				const ReflectedDotCamera = vectToCamera.dot(ReflectedLightVect);
 				if (ReflectedDotCamera > 0) {
-					specScale = (ReflectedDotCamera / (vectToCamera.magnitude * ReflectedLightVect.magnitude)) ** specular;
+					const specScale = (ReflectedDotCamera / (vectToCamera.magnitude * ReflectedLightVect.magnitude)) ** specular;
 					totalIllum += light.intensity * specScale;
 				}
 			}
@@ -68,17 +64,18 @@ export class RayTracing {
 		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
 			const hit = this.raycast(cameraPos, dir);
 
-			// DEBUG code for coloring the spheres. This is wrong, we should be treating the camera as a light source and using distance etc etc:
 			if (hit) {
 				// Assuming all light is white and that distance does not affect light sensitivity
 
 				// Index 0 always has the lowest distance, subtracts discriminant
 				const hitToCamera = cameraPos.sub(hit.hits[0].point);
-				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized();
+				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized(); // TODO: this is specific to spheres so must be moved to the SphereObject class
 				const illum = this.computeLight(hit.hits[0].point, surfaceNorm, hitToCamera, hit.object.specular);
 
 				this.buffer[y * this.width + x] = (hit.object.color.mul(illum)).getReverseHexColor();
-			} else { this.buffer[y * this.width + x] = this.black.getReverseHexColor(); }
+			} else {
+				this.buffer[y * this.width + x] = ColorVector.black.getReverseHexColor();
+			}
 		});
 	}
 
@@ -96,6 +93,7 @@ export class RayTracing {
 		this.scene.addObject(sphere4);
 		this.scene.addLight(light1);
 		this.scene.addLight(light2);
+
 		const FOV = (60 / 360) * 2 * Math.PI;
 		this.camera = new Camera(Vector.zero, Matrix.xRotation(Math.PI / 2), FOV);
 	}

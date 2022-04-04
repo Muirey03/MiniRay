@@ -64,7 +64,7 @@ export class RayTracing {
 
 	renderScene () {
 		const cameraPos = this.camera.pos;
-		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
+		this.camera.iterateDirectionVectors(this.width, this.height, async (x, y, dir) => {
 			const hit = this.raycast(cameraPos, dir);
 
 			if (hit) {
@@ -87,7 +87,7 @@ export class RayTracing {
 		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 0, 255), 1000);
 		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 100);
 		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 1000);
-		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), -1, new ColorVector(255, 255, 0), -1);
+		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 0), -1);
 		const light1 = new PointLight(new Vector(2, 0, 0), 0.75);
 		const light2 = new DirectionalLight(new Vector(0, 0, 1), 1);
 		this.scene.addObject(sphere1);

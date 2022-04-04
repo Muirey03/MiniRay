@@ -2,6 +2,7 @@ import { SceneObject } from './sceneObject.js';
 import { intersectVectorWithPlane } from './rayMath.js';
 
 export class PlaneObject extends SceneObject {
+	// radius = -1 means infinite plane
 	constructor (pos, normal, radius, color, specular) {
 		super(pos, color, specular);
 		this.normal = normal.normalized();

@@ -46,7 +46,7 @@ export function intersectVectorWithPlane (rayOrigin, rayVector, planeCenter, pla
 	if (distance <= 0) return [];
 	const point = unitRayVector.mul(distance).add(rayOrigin);
 	const diff = planeCenter.sub(point);
-	if (diff.magnitude <= planeRadius) {
+	if (planeRadius === -1 || diff.magnitude <= planeRadius) {
 		return [{ point: point, distance: distance }];
 	}
 	return [];

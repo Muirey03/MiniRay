@@ -37,3 +37,17 @@ export function intersectVectorWithSphere (rayOrigin, rayVector, sphereCenter, s
 
 	return intersections;
 }
+
+export function intersectVectorWithPlane (rayOrigin, rayVector, planeCenter, planeNormal, planeRadius) {
+	const unitRayVector = rayVector.normalized();
+	const constant = planeCenter.dot(planeNormal);
+
+	const distance = (constant - planeNormal.dot(rayOrigin)) / planeNormal.dot(rayVector);
+	if (distance <= 0) return [];
+	const point = unitRayVector.mul(distance).add(rayOrigin);
+	const diff = planeCenter.sub(point);
+	if (diff.magnitude <= planeRadius) {
+		return [{ point: point, distance: distance }];
+	}
+	return [];
+}

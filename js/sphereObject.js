@@ -11,4 +11,8 @@ export class SphereObject extends SceneObject {
 		const hits = intersectVectorWithSphere(ray.origin, ray.direction, this.pos, this.radius);
 		return hits.length > 0 ? { object: this, hits: hits } : null;
 	}
+
+	surfaceNormal (point) {
+		return point.sub(this.pos).normalized();
+	}
 }

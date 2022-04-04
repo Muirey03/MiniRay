@@ -8,6 +8,10 @@ export class SceneObject {
 	}
 
 	rayIntersection (ray) {
-		return null;
+		throw new Error('rayIntersection not implemented.');
+	}
+
+	surfaceNormal (point) {
+		throw new Error('surfaceNormal not implemented.');
 	}
 }

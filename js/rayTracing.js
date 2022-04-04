@@ -2,6 +2,7 @@
 
 import { Scene } from './scene.js';
 import { SphereObject } from './sphereObject.js';
+import { PlaneObject } from './planeObject.js';
 import { Vector } from './vector.js';
 import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
@@ -38,6 +39,8 @@ export class RayTracing {
 		for (const light of this.scene.lights) {
 			const vectToLight = (light instanceof PointLight) ? light.pos.sub(point) : light.dir;
 
+			// TODO: check not in shadow by doing a raycast in this direction and ensuring nothing is hit
+
 			// Taken from https://gabrielgambetta.com/computer-graphics-from-scratch/03-light.html
 
 			// Diffuse reflection
@@ -69,7 +72,7 @@ export class RayTracing {
 
 				// Index 0 always has the lowest distance, subtracts discriminant
 				const hitToCamera = cameraPos.sub(hit.hits[0].point);
-				const surfaceNorm = hit.hits[0].point.sub(hit.object.pos).normalized(); // TODO: this is specific to spheres so must be moved to the SphereObject class
+				const surfaceNorm = hit.object.surfaceNormal(hit.hits[0].point);
 				const illum = this.computeLight(hit.hits[0].point, surfaceNorm, hitToCamera, hit.object.specular);
 
 				this.buffer[y * this.width + x] = (hit.object.color.mul(illum)).getReverseHexColor();
@@ -84,17 +87,17 @@ export class RayTracing {
 		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 0, 255), 1000);
 		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 100);
 		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 1000);
-		const sphere4 = new SphereObject(new Vector(10, -10, 0), 10, new ColorVector(0, 0, 255), -1);
+		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), 3, new ColorVector(255, 255, 0), -1);
 		const light1 = new PointLight(new Vector(2, 0, 0), 0.75);
 		const light2 = new DirectionalLight(new Vector(0, 0, 1), 1);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
-		this.scene.addObject(sphere4);
+		this.scene.addObject(plane1);
 		this.scene.addLight(light1);
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(Vector.zero, Matrix.xRotation(Math.PI / 2), FOV);
+		this.camera = new Camera(new Vector(-10, 2, 0), Matrix.xRotation(Math.PI / 2), FOV);
 	}
 }

@@ -39,7 +39,11 @@ export class RayTracing {
 		for (const light of this.scene.lights) {
 			const vectToLight = (light instanceof PointLight) ? light.pos.sub(point) : light.dir;
 
-			// TODO: check not in shadow by doing a raycast in this direction and ensuring nothing is hit
+			// Check not in shadow by doing a raycast in this direction and ensuring nothing is hit:
+			const hit = this.raycast(point, vectToLight);
+			if (hit && ((light instanceof DirectionalLight) || hit.hits[0].distance < vectToLight.magnitude)) {
+				continue;
+			}
 
 			// Taken from https://gabrielgambetta.com/computer-graphics-from-scratch/03-light.html
 
@@ -89,14 +93,12 @@ export class RayTracing {
 		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 100);
 		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 1000);
 		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1);
-		const light1 = new PointLight(new Vector(2, 0, 0), 0.75);
-		const light2 = new DirectionalLight(new Vector(0, 0, 1), 1);
+		const light1 = new PointLight(new Vector(2, 2.5, 0), 0.75);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
 		this.scene.addObject(plane1);
 		this.scene.addLight(light1);
-		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
 		this.camera = new Camera(new Vector(-10, 2, 0), Matrix.xRotation(Math.PI / 2), FOV);

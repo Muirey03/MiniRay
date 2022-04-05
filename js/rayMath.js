@@ -1,3 +1,5 @@
+const SMALL_NUMBER = 1.0e-10;
+
 /**
  * If solutions exist - returns an array of [solution1, solution2].
  * Else - returns [NaN, NaN].
@@ -28,10 +30,10 @@ export function intersectVectorWithSphere (rayOrigin, rayVector, sphereCenter, s
 
 	const distance1 = quadratricResult[0];
 	const distance2 = quadratricResult[1];
-	if (distance1 >= 0) { // Note this won't execute for NaN values.
+	if (distance1 > SMALL_NUMBER) { // Note this won't execute for NaN values.
 		intersections.push({ point: unitRayVector.mul(distance1).add(rayOrigin), distance: distance1 });
 	}
-	if (distance2 >= 0) { // Note this won't execute for NaN values.
+	if (distance2 > SMALL_NUMBER) { // Note this won't execute for NaN values.
 		intersections.push({ point: unitRayVector.mul(distance2).add(rayOrigin), distance: distance2 });
 	}
 
@@ -43,7 +45,7 @@ export function intersectVectorWithPlane (rayOrigin, rayVector, planeCenter, pla
 	const constant = planeCenter.dot(planeNormal);
 
 	const distance = (constant - planeNormal.dot(rayOrigin)) / planeNormal.dot(rayVector);
-	if (distance <= 0) return [];
+	if (distance <= SMALL_NUMBER) return [];
 	const point = unitRayVector.mul(distance).add(rayOrigin);
 	const diff = planeCenter.sub(point);
 	if (planeRadius === Infinity || diff.magnitude <= planeRadius) {

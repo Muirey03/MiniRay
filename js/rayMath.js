@@ -53,3 +53,8 @@ export function intersectVectorWithPlane (rayOrigin, rayVector, planeCenter, pla
 	}
 	return [];
 }
+
+export function reflectVectorInPlane (rayVector, planeNormal) {
+	// https://en.wikipedia.org/wiki/Reflection_(mathematics)#Reflection_through_a_hyperplane_in_n_dimensions where $a$ is already normalised, so $a.a$ is zero.
+	return rayVector.sub(planeNormal.mul(2 * rayVector.dot(planeNormal)));
+}

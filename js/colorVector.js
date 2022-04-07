@@ -19,6 +19,22 @@ export class ColorVector {
 		return new ColorVector(1, 1, 1);
 	}
 
+	add (other) {
+		return new ColorVector(
+			this.r + other.r,
+			this.g + other.g,
+			this.b + other.b
+		);
+	}
+
+	sub (other) {
+		return new ColorVector(
+			this.r - other.r,
+			this.g - other.g,
+			this.b - other.b
+		);
+	}
+
 	mul (scalar) {
 		return new ColorVector(
 			Math.round(this.r * scalar),

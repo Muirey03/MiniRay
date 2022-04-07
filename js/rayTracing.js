@@ -8,12 +8,16 @@ import { Camera } from './camera.js';
 import { Matrix } from './matrix.js';
 import { DirectionalLight, PointLight } from './light.js';
 import { ColorVector } from './colorVector.js';
+import { reflectVectorInPlane } from './rayMath.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
 		this.buffer = buffer;
 		this.width = width;
 		this.height = height;
+
+		this.NUM_RAY_BOUNCES = 5;
+		this.SKY_COLOR = new ColorVector(50, 153, 204);
 
 		// create our scene
 		this.createScene();
@@ -31,6 +35,18 @@ export class RayTracing {
 			}
 		}
 		return closest;
+	}
+
+	raytrace (origin, direction, maxBounces, hits = []) {
+		const hit = this.raycast(origin, direction);
+		if (hit && maxBounces >= 0) {
+			hits.push(hit);
+			const hitPoint = hit.hits[0].point;
+			const reflectedVector = reflectVectorInPlane(direction, hit.object.surfaceNormal(hitPoint));
+			return this.raytrace(hitPoint, reflectedVector, maxBounces - 1, hits);
+		} else {
+			return hits;
+		}
 	}
 
 	computeLight (point, surfaceNorm, vectToCamera, specular) {
@@ -54,11 +70,12 @@ export class RayTracing {
 			}
 
 			// Specular reflection
-			if (specular !== -1) {
-				const ReflectedLightVect = (surfaceNorm.mul(2 * surfaceNorm.dot(vectToLight))).sub(vectToLight);
-				const ReflectedDotCamera = vectToCamera.dot(ReflectedLightVect);
-				if (ReflectedDotCamera > 0) {
-					const specScale = (ReflectedDotCamera / (vectToCamera.magnitude * ReflectedLightVect.magnitude)) ** specular;
+			const SMOOTHNESS = 100; // FIXME: Break this out into a propety for each object.
+			if (specular > 0) {
+				const reflectedLightVect = (surfaceNorm.mul(2 * surfaceNorm.dot(vectToLight))).sub(vectToLight);
+				const reflectedDotCamera = vectToCamera.dot(reflectedLightVect);
+				if (reflectedDotCamera > 0) {
+					const specScale = specular * ((reflectedDotCamera / (vectToCamera.magnitude * reflectedLightVect.magnitude)) ** SMOOTHNESS);
 					totalIllum += light.intensity * specScale;
 				}
 			}
@@ -67,40 +84,52 @@ export class RayTracing {
 	}
 
 	renderScene () {
-		const cameraPos = this.camera.pos;
 		this.camera.iterateDirectionVectors(this.width, this.height, async (x, y, dir) => {
-			const hit = this.raycast(cameraPos, dir);
+			const hits = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
+			let overallColor = this.SKY_COLOR;
+			hits.reverse().forEach((hit) => {
+				const hitColor = this.unlitColorForHit(hit, this.camera.pos);
+				const illumination = this.illuminationForHit(hit);
 
-			if (hit) {
-				// Assuming all light is white and that distance does not affect light sensitivity
-
-				// Index 0 always has the lowest distance, subtracts discriminant
-				const point = hit.hits[0].point;
-				const hitToCamera = cameraPos.sub(point);
-				const surfaceNorm = hit.object.surfaceNormal(point);
-				const illum = this.computeLight(point, surfaceNorm, hitToCamera, hit.object.specular);
-
-				this.buffer[y * this.width + x] = (hit.object.colorAtPoint(point).mul(illum)).getReverseHexColor();
-			} else {
-				this.buffer[y * this.width + x] = ColorVector.black.getReverseHexColor();
-			}
+				overallColor = hitColor.mul(illumination).lerp(overallColor, hit.object.specular);
+			});
+			this.buffer[y * this.width + x] = overallColor.getReverseHexColor();
 		});
+	}
+
+	illuminationForHit (hit) {
+		const point = hit.hits[0].point;
+		const hitToCamera = this.camera.pos.sub(point);
+		const surfaceNorm = hit.object.surfaceNormal(point);
+		return this.computeLight(point, surfaceNorm, hitToCamera, hit.object.specular);
+	}
+
+	unlitColorForHit (hit) {
+		if (hit) {
+			// Index 0 always has the lowest distance
+			const point = hit.hits[0].point;
+			return hit.object.colorAtPoint(point);
+		} else {
+			return this.SKY_COLOR;
+		}
 	}
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 0, 255), 1000);
-		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 100);
-		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 1000);
-		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1);
+		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 255, 255), 0.3);
+		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 0.1);
+		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 0.1);
+		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, 0.2);
 		const light1 = new PointLight(new Vector(2, 2.5, 0), 0.75);
+		const light2 = new PointLight(new Vector(1, 0.5, 0), 0.75);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
 		this.scene.addObject(plane1);
 		this.scene.addLight(light1);
+		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-10, 2, 0), Matrix.xRotation(Math.PI / 2), FOV);
+		this.camera = new Camera(new Vector(-4, 0.2, 0), Matrix.xRotation(Math.PI / 2), FOV);
 	}
 }

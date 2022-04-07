@@ -29,9 +29,9 @@ export class ColorVector {
 
 	lerp (other, amount) {
 		return new ColorVector(
-			this.r * amount + other.r * (1 - amount),
-			this.g * amount + other.g * (1 - amount),
-			this.b * amount + other.b * (1 - amount)
+			this.r * (1 - amount) + other.r * amount,
+			this.g * (1 - amount) + other.g * amount,
+			this.b * (1 - amount) + other.b * amount
 		);
 	}
 

@@ -5,21 +5,34 @@ function clamp (num, min, max) {
 
 export class ColorVector {
 	constructor (r, g, b) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
+		// Restrict RGB channels between 0 and 255
+		this.r = clamp(r, 0, 255);
+		this.g = clamp(g, 0, 255);
+		this.b = clamp(b, 0, 255);
 	}
 
 	static get black () {
 		return new ColorVector(0, 0, 0);
 	}
 
+	static get white () {
+		return new ColorVector(1, 1, 1);
+	}
+
 	mul (scalar) {
-		// Restrict RGB channels between 0 and 255
-		const newR = clamp(Math.round(this.r * scalar), 0, 255);
-		const newG = clamp(Math.round(this.g * scalar), 0, 255);
-		const newB = clamp(Math.round(this.b * scalar), 0, 255);
-		return new ColorVector(newR, newG, newB);
+		return new ColorVector(
+			Math.round(this.r * scalar),
+			Math.round(this.g * scalar),
+			Math.round(this.b * scalar)
+		);
+	}
+
+	lerp (other, amount) {
+		return new ColorVector(
+			this.r * amount + other.r * (1 - amount),
+			this.g * amount + other.g * (1 - amount),
+			this.b * amount + other.b * (1 - amount)
+		);
 	}
 
 	getReverseHexColor () {

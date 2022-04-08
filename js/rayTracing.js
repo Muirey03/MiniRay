@@ -70,12 +70,11 @@ export class RayTracing {
 			}
 
 			// Specular reflection
-			const SMOOTHNESS = 100; // FIXME: Break this out into a propety for each object.
-			if (specular > 0) {
+			if (specular !== -1) {
 				const reflectedLightVect = (surfaceNorm.mul(2 * surfaceNorm.dot(vectToLight))).sub(vectToLight);
 				const reflectedDotCamera = vectToCamera.dot(reflectedLightVect);
 				if (reflectedDotCamera > 0) {
-					const specScale = specular * ((reflectedDotCamera / (vectToCamera.magnitude * reflectedLightVect.magnitude)) ** SMOOTHNESS);
+					const specScale = (reflectedDotCamera / (vectToCamera.magnitude * reflectedLightVect.magnitude)) ** specular;
 					totalIllum += light.intensity * specScale;
 				}
 			}
@@ -91,7 +90,7 @@ export class RayTracing {
 				const hitColor = this.unlitColorForHit(hit, this.camera.pos);
 				const illumination = this.illuminationForHit(hit);
 
-				overallColor = hitColor.mul(illumination).lerp(overallColor, hit.object.specular);
+				overallColor = hitColor.mul(illumination).lerp(overallColor, hit.object.reflectivity);
 			});
 			this.buffer[y * this.width + x] = overallColor.getReverseHexColor();
 		});
@@ -116,10 +115,10 @@ export class RayTracing {
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 255, 255), 0.3);
-		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 0.1);
-		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 0.1);
-		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, 0.2);
+		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 255, 255), 100, 0.3);
+		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 200, 0.1);
+		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 100, 0.1);
+		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1, 0);
 		const light1 = new PointLight(new Vector(2, 2.5, 0), 0.75);
 		const light2 = new PointLight(new Vector(1, 0.5, 0), 0.75);
 		this.scene.addObject(sphere1);

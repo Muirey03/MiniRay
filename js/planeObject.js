@@ -4,8 +4,8 @@ import { ColorVector } from './colorVector.js';
 
 export class PlaneObject extends SceneObject {
 	// radius = -1 means infinite plane
-	constructor (pos, normal, radius, color, checkered, specular) {
-		super(pos, specular);
+	constructor (pos, normal, radius, color, checkered, specular, reflectivity) {
+		super(pos, specular, reflectivity);
 		this.normal = normal.normalized();
 		this.radius = radius;
 		this.color = color;

@@ -83,7 +83,7 @@ export class RayTracing {
 	}
 
 	renderScene () {
-		this.camera.iterateDirectionVectors(this.width, this.height, async (x, y, dir) => {
+		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
 			const hits = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
 			let overallColor = this.SKY_COLOR;
 			hits.reverse().forEach((hit) => {

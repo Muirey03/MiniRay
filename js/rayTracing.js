@@ -16,7 +16,7 @@ export class RayTracing {
 		this.width = width;
 		this.height = height;
 
-		this.NUM_RAY_BOUNCES = 5;
+		this.NUM_RAY_BOUNCES = 2;
 		this.SKY_COLOR = new ColorVector(50, 153, 204);
 
 		// create our scene

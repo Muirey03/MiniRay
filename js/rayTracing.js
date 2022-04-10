@@ -129,6 +129,6 @@ export class RayTracing {
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-2, 0.2, 0), Matrix.yawPitchRoll(0.2, 0, Math.PI / 2), FOV);
+		this.camera = new Camera(new Vector(-2, 0.2, 0), Matrix.yawPitchRoll(0.2, 0.2, Math.PI / 2), FOV);
 	}
 }

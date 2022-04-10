@@ -38,7 +38,7 @@ export class Matrix {
 	static yawPitchRoll (y, p, r) {
 		// General rotation matrix taken from: https://en.wikipedia.org/wiki/Rotation_matrix
 		return new Matrix(new Vector(Math.cos(y) * Math.cos(p), Math.sin(y) * Math.cos(p), -Math.sin(p)),
-			new Vector(Math.cos(y) * Math.sin(p) * Math.sin(r) - Math.sin(y) * Math.cos(r), Math.sin(y) * Math.sin(p) * Math.sin(r) + Math.sin(y) * Math.cos(r), Math.cos(p) * Math.sin(r)),
+			new Vector(Math.cos(y) * Math.sin(p) * Math.sin(r) - Math.sin(y) * Math.cos(r), Math.sin(y) * Math.sin(p) * Math.sin(r) + Math.cos(y) * Math.cos(r), Math.cos(p) * Math.sin(r)),
 			new Vector(Math.cos(y) * Math.sin(p) * Math.cos(r) + Math.sin(y) * Math.sin(r), Math.sin(y) * Math.sin(p) * Math.cos(r) - Math.cos(y) * Math.sin(r), Math.cos(p) * Math.cos(r)));
 	}
 

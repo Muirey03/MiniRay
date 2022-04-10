@@ -16,7 +16,7 @@ export class RayTracing {
 		this.width = width;
 		this.height = height;
 
-		this.NUM_RAY_BOUNCES = 2;
+		this.NUM_RAY_BOUNCES = 5;
 		this.SKY_COLOR = new ColorVector(50, 153, 204);
 
 		// create our scene
@@ -116,7 +116,7 @@ export class RayTracing {
 	createScene () {
 		this.scene = new Scene();
 		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 255, 255), 100, 0.3);
-		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), 200, 0.1);
+		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), -1, 0.1);
 		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 100, 0.1);
 		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1, 0);
 		const light1 = new PointLight(new Vector(2, 2.5, 0), 0.75);
@@ -129,6 +129,6 @@ export class RayTracing {
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-4, 0.2, 0), Matrix.xRotation(Math.PI / 2), FOV);
+		this.camera = new Camera(new Vector(-2, 0.2, 0), Matrix.yawPitchRoll(0.2, 0, Math.PI / 2), FOV);
 	}
 }

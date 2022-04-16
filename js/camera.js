@@ -14,7 +14,9 @@ export class Camera {
 		for (let x = 0; x < width; x++) {
 			for (let y = 0; y < height; y++) {
 				const dir = this.rotMatrix.vectMul(new Vector(1, (x / width - 0.5) * viewWidth, (y / height - 0.5) * viewHeight));
-				fn(x, y, dir);
+
+				// higher points in the scene = lower values of y in the pixelBuffer:
+				fn(x, height - 1 - y, dir);
 			}
 		}
 	}

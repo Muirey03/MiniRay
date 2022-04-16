@@ -24,7 +24,8 @@ export class PlaneObject extends SceneObject {
 	colorAtPoint (point) {
 		if (this.checkered) {
 			const checkerSz = 1;
-			const col = (Math.floor(point.x / checkerSz) + Math.floor(point.z / checkerSz)) % 2;
+			// TODO: this assumes that the normalVec = z
+			const col = (Math.floor(point.x / checkerSz) + Math.floor(point.y / checkerSz)) % 2;
 			if (col === 0) return ColorVector.black;
 		}
 		return this.color;

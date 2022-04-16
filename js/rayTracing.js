@@ -115,12 +115,12 @@ export class RayTracing {
 
 	createScene () {
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(3, 0, -0.5), 0.5, new ColorVector(255, 255, 255), 100, 0.3);
-		const sphere2 = new SphereObject(new Vector(3, 0.5, 1), 0.5, new ColorVector(0, 255, 0), -1, 0.1);
-		const sphere3 = new SphereObject(new Vector(3, 1, -0.5), 0.5, new ColorVector(0, 0, 255), 100, 0.1);
-		const plane1 = new PlaneObject(new Vector(0, -1, 0), new Vector(0, 1, 0), Infinity, new ColorVector(255, 255, 255), true, -1, 0);
-		const light1 = new PointLight(new Vector(2, 2.5, 0), 0.75);
-		const light2 = new PointLight(new Vector(1, 0.5, 0), 0.75);
+		const sphere1 = new SphereObject(new Vector(3, -0.5, -0), 0.5, new ColorVector(255, 255, 255), 100, 0.3);
+		const sphere2 = new SphereObject(new Vector(3, 1, 0.5), 0.5, new ColorVector(0, 255, 0), -1, 0.1);
+		const sphere3 = new SphereObject(new Vector(3, -1, 1.5), 0.5, new ColorVector(0, 0, 255), 100, 0.1);
+		const plane1 = new PlaneObject(new Vector(0, 0, -1), new Vector(0, 0, 1), Infinity, new ColorVector(255, 255, 255), true, -1, 0);
+		const light1 = new PointLight(new Vector(2, 0, 2.5), 0.75);
+		const light2 = new PointLight(new Vector(1, 0, 2), 1);
 		this.scene.addObject(sphere1);
 		this.scene.addObject(sphere2);
 		this.scene.addObject(sphere3);
@@ -129,6 +129,6 @@ export class RayTracing {
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-2, 0.2, 0), Matrix.yawPitchRoll(0.2, 0.2, Math.PI / 2), FOV);
+		this.camera = new Camera(new Vector(-2, 0, 1.5), Matrix.yawPitchRoll(0, 0.15, 0), FOV);
 	}
 }

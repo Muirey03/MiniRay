@@ -1,7 +1,10 @@
 import { RayTracing } from './rayTracing.js';
 
-const width = Math.floor(process.stdout.columns / 2) - 10;
-const height = process.stdout.rows - 10;
+const rows = process.stdout.rows - 10;
+const cols = process.stdout.columns - 10;
+const charsPerPx = 0.0005686 * cols + 1.899; // constants found using linear regression
+const width = Math.floor((cols - 10) / charsPerPx);
+const height = rows;
 const pixelBuffer = new Uint32Array(width * height);
 
 function printBuffer (buffer) {
@@ -10,17 +13,19 @@ function printBuffer (buffer) {
 
 	console.log('\x1B[0;0H'); // reset cursor to 0,0
 	let s = '';
-	for (let i = 0; i < buffer.length; i++) {
-		const abgr = buffer[i];
-		const r = abgr & 0xff;
-		const g = (abgr & 0xff00) >> 8;
-		const b = (abgr & 0xff0000) >> 16;
-		const avg = (r + g + b) / 3;
-		const idx = Math.floor((1 - (avg / 0xff)) * (densityStr.length - 1));
-		s += densityStr[idx] + densityStr[idx];
 
-		// print newline:
-		if ((i + 1) % width === 0) { s += '\n'; }
+	for (let y = 0; y < rows; y++) {
+		for (let x = 0; x < cols; x++) {
+			const i = y * width + Math.floor((x / cols) * width);
+			const abgr = buffer[i];
+			const r = abgr & 0xff;
+			const g = (abgr & 0xff00) >> 8;
+			const b = (abgr & 0xff0000) >> 16;
+			const avg = (r + g + b) / 3;
+			const densityIdx = Math.floor((1 - (avg / 0xff)) * (densityStr.length - 1));
+			s += densityStr[densityIdx];
+		}
+		s += '\n';
 	}
 	console.log(s + '\x1B[0;0H');
 }

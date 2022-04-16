@@ -16,7 +16,7 @@ export class ColorVector {
 	}
 
 	static get white () {
-		return new ColorVector(1, 1, 1);
+		return new ColorVector(255, 255, 255);
 	}
 
 	add (other) {

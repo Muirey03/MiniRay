@@ -1,15 +1,13 @@
 import { SceneObject } from './sceneObject.js';
 import { intersectVectorWithPlane } from './rayMath.js';
-import { ColorVector } from './colorVector.js';
+import { planarMap } from './textureMapping.js';
 
 export class PlaneObject extends SceneObject {
 	// radius = -1 means infinite plane
-	constructor (pos, normal, radius, color, checkered, specular, reflectivity) {
-		super(pos, specular, reflectivity);
+	constructor (pos, normal, radius, material) {
+		super(pos, material);
 		this.normal = normal.normalized();
 		this.radius = radius;
-		this.color = color;
-		this.checkered = checkered;
 	}
 
 	rayIntersection (ray) {
@@ -22,12 +20,7 @@ export class PlaneObject extends SceneObject {
 	}
 
 	colorAtPoint (point) {
-		if (this.checkered) {
-			const checkerSz = 1;
-			// TODO: this assumes that the normalVec = z
-			const col = (Math.floor(point.x / checkerSz) + Math.floor(point.y / checkerSz)) % 2;
-			if (col === 0) return ColorVector.black;
-		}
-		return this.color;
+		const UV = planarMap(point);
+		return this.material.colorAtUV(UV);
 	}
 }

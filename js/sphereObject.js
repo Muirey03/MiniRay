@@ -1,11 +1,11 @@
 import { SceneObject } from './sceneObject.js';
 import { intersectVectorWithSphere } from './rayMath.js';
+import { sphericalMap } from './textureMapping.js';
 
 export class SphereObject extends SceneObject {
-	constructor (pos, radius, color, specular, reflectivity) {
-		super(pos, specular, reflectivity);
+	constructor (pos, radius, material) {
+		super(pos, material);
 		this.radius = radius;
-		this.color = color;
 	}
 
 	rayIntersection (ray) {
@@ -18,6 +18,7 @@ export class SphereObject extends SceneObject {
 	}
 
 	colorAtPoint (point) {
-		return this.color;
+		const UV = sphericalMap(point.sub(this.pos));
+		return this.material.colorAtUV(UV);
 	}
 }

@@ -1,8 +1,15 @@
 export class SceneObject {
-	constructor (pos, specular = -1, reflectivity = 0) {
+	constructor (pos, material) {
 		this.pos = pos;
-		this.specular = specular;
-		this.reflectivity = reflectivity;
+		this.material = material;
+	}
+
+	get specular () {
+		return this.material.specular;
+	}
+
+	get reflectivity () {
+		return this.material.reflectivity;
 	}
 
 	rayIntersection (ray) {

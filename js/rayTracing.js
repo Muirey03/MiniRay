@@ -10,6 +10,7 @@ import { DirectionalLight, PointLight } from './light.js';
 import { ColorVector } from './colorVector.js';
 import { reflectVectorInPlane } from './rayMath.js';
 import { Material } from './material.js';
+import { sphericalMap } from './textureMapping.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
@@ -18,10 +19,11 @@ export class RayTracing {
 		this.height = height;
 
 		this.NUM_RAY_BOUNCES = 5;
-		this.SKY_COLOR = new ColorVector(50, 153, 204);
 
 		// constructor cannot be async so we need a new function:
 		(async () => {
+			this.skyMaterial = await Material.newMaterial('resources/sky.jpg', 1, -1, 0, 0.6);
+
 			// create our scene
 			await this.createScene();
 
@@ -49,7 +51,7 @@ export class RayTracing {
 			const reflectedVector = reflectVectorInPlane(direction, hit.object.surfaceNormal(hitPoint));
 			return this.raytrace(hitPoint, reflectedVector, maxBounces - 1, hits);
 		} else {
-			return hits;
+			return { hits, direction };
 		}
 	}
 
@@ -88,8 +90,8 @@ export class RayTracing {
 
 	renderScene () {
 		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
-			const hits = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
-			let overallColor = this.SKY_COLOR;
+			const { hits, direction } = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
+			let overallColor = this.skyMaterial.colorAtUV(sphericalMap(direction));
 			hits.reverse().forEach((hit) => {
 				const hitColor = this.unlitColorForHit(hit);
 				const illumination = this.illuminationForHit(hit);
@@ -108,27 +110,23 @@ export class RayTracing {
 	}
 
 	unlitColorForHit (hit) {
-		if (hit) {
-			// Index 0 always has the lowest distance
-			const point = hit.hits[0].point;
-			return hit.object.colorAtPoint(point);
-		} else {
-			return this.SKY_COLOR;
-		}
+		// Index 0 always has the lowest distance
+		const point = hit.hits[0].point;
+		return hit.object.colorAtPoint(point);
 	}
 
 	async createScene () {
-		const earthMat = await Material.newMaterial('resources/earth.jpg', 1, 10, 0);
+		const earthMat = await Material.newMaterial('resources/earth.jpg', 1, 10, 0, 0.25);
 		const poolBallMat = await Material.newMaterial('resources/poolball.jpg', 1, 10, 0.05);
 		const bricksMat = await Material.newMaterial('resources/bricks.jpg', 1, -1, 0);
-		const checkerboardMat = await Material.newMaterial('resources/checkerboard.png', 1, -1, 0.1);
+		const planeMat = await Material.newMaterial('resources/checkerboard.png', 1, -1, 0.5);
 
 		this.scene = new Scene();
 		const sphere1 = new SphereObject(new Vector(3, -0.5, -0), 0.5, bricksMat);
 		const sphere2 = new SphereObject(new Vector(3, 1, 0.5), 0.5, poolBallMat);
 		const sphere3 = new SphereObject(new Vector(3, -1, 1.5), 0.5, earthMat);
 		const sphere4 = new SphereObject(new Vector(4, 0.2, 1.5), 0.5, Material.newColorMaterial(ColorVector.white, 100, 0.25));
-		const plane1 = new PlaneObject(new Vector(0, 0, -1), new Vector(0, 0, 1), Infinity, checkerboardMat);
+		const plane1 = new PlaneObject(new Vector(0, 0, -1), new Vector(0, 0, 1), Infinity, planeMat);
 		const light1 = new PointLight(new Vector(2, 0, 2.5), 0.75);
 		const light2 = new PointLight(new Vector(1, 0, 2), 1);
 		this.scene.addObject(sphere1);
@@ -140,6 +138,6 @@ export class RayTracing {
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-2, 0, 1.5), Matrix.yawPitchRoll(0, 0.15, 0), FOV);
+		this.camera = new Camera(new Vector(-2, 0, 1), Matrix.yawPitchRoll(0, 0, 0), FOV);
 	}
 }

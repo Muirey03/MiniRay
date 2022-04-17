@@ -26,10 +26,12 @@ export class Material {
 		this.reflectivity = reflectivity;
 	}
 
-	static async newMaterial (url, scale, specular, reflectivity) {
+	static async newMaterial (url, scale, specular, reflectivity, xRotation = 0) {
 		const mat = new Material(specular, reflectivity);
 		mat.imgData = await loadImage(url);
 		mat.scale = scale;
+		xRotation %= 1;
+		mat.xRotation = xRotation < 0 ? xRotation + 1 : xRotation;
 		return mat;
 	}
 
@@ -38,7 +40,7 @@ export class Material {
 	}
 
 	colorAtUV (UV) {
-		UV.x = (UV.x * this.scale) % 1;
+		UV.x = ((UV.x + this.xRotation) * this.scale) % 1;
 		UV.y = (UV.y * this.scale) % 1;
 		const width = this.imgData.width;
 		const height = this.imgData.height;

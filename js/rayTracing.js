@@ -18,7 +18,7 @@ export class RayTracing {
 		this.width = width;
 		this.height = height;
 
-		this.NUM_RAY_BOUNCES = 5;
+		this.NUM_RAY_BOUNCES = 3;
 
 		// constructor cannot be async so we need a new function:
 		(async () => {
@@ -89,16 +89,19 @@ export class RayTracing {
 	}
 
 	renderScene () {
-		this.camera.iterateDirectionVectors(this.width, this.height, (x, y, dir) => {
+		this.camera.iterateDirectionVectors(this.width, this.height, (dir) => {
 			const { hits, direction } = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
-			let overallColor = this.skyMaterial.colorAtUV(sphericalMap(direction));
+			let partialColor = this.skyMaterial.colorAtUV(sphericalMap(direction));
 			hits.reverse().forEach((hit) => {
 				const hitColor = this.unlitColorForHit(hit);
 				const illumination = this.illuminationForHit(hit);
 
-				overallColor = hitColor.mul(illumination).lerp(overallColor, hit.object.reflectivity);
+				partialColor = hitColor.mul(illumination).lerp(partialColor, hit.object.reflectivity);
 			});
-			this.buffer[y * this.width + x] = overallColor.getReverseHexColor();
+			return partialColor.mul(1 / this.camera.SAMPLECOUNT);
+		}, (x, y, color) => {
+			// Seperate pixel colouring so color can be accumulated to prevent rounding errors
+			this.buffer[y * this.width + x] = color.getReverseHexColor();
 		});
 	}
 

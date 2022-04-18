@@ -37,9 +37,17 @@ export class ColorVector {
 
 	mul (scalar) {
 		return new ColorVector(
-			Math.round(this.r * scalar),
-			Math.round(this.g * scalar),
-			Math.round(this.b * scalar)
+			this.r * scalar,
+			this.g * scalar,
+			this.b * scalar
+		);
+	}
+
+	round () {
+		return new ColorVector(
+			Math.round(this.r),
+			Math.round(this.g),
+			Math.round(this.b)
 		);
 	}
 

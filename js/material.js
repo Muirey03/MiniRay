@@ -1,5 +1,7 @@
 import { ColorVector } from './colorVector.js';
 
+let getPixels = null;
+
 function getImageData (img) {
 	const canvas = document.createElement('canvas');
 	canvas.width = img.width;
@@ -10,13 +12,30 @@ function getImageData (img) {
 }
 
 async function loadImage (url) {
-	return new Promise(resolve => {
-		const img = new Image();
-		img.src = url;
-		img.onload = () => {
-			resolve(getImageData(img));
-		};
-	});
+	if (typeof Image !== 'undefined') {
+		return new Promise(resolve => {
+			const img = new Image();
+			img.src = url;
+			img.onload = () => {
+				resolve(getImageData(img));
+			};
+		});
+	} else {
+		return new Promise(resolve => {
+			(async () => {
+				if (!getPixels) {
+					getPixels = (await import('get-pixels')).default;
+				}
+				getPixels(url, (_, pixels) => {
+					resolve({
+						data: pixels.data,
+						width: pixels.shape[0],
+						height: pixels.shape[1]
+					});
+				});
+			})();
+		});
+	}
 }
 
 export class Material {

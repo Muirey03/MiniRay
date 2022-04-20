@@ -90,7 +90,11 @@ export class RayTracing {
 
 	renderScene () {
 		this.camera.iterateDirectionVectors(this.width, this.height, (dir) => {
-			const { hits, direction } = this.raytrace(this.camera.pos, dir, this.NUM_RAY_BOUNCES);
+			// Finds where the original ray would have hit the focus plane
+			const focusPoint = this.camera.pos.add(dir.mul(this.camera.focusDist / this.camera.forward.dot(dir)));
+			const startPoint = this.randomStart();
+			const toFocus = focusPoint.sub(startPoint).normalized();
+			const { hits, direction } = this.raytrace(startPoint, toFocus, this.NUM_RAY_BOUNCES);
 			let partialColor = this.skyMaterial.colorAtUV(sphericalMap(direction));
 			hits.reverse().forEach((hit) => {
 				const hitColor = this.unlitColorForHit(hit);
@@ -103,6 +107,13 @@ export class RayTracing {
 			// Seperate pixel colouring so color can be accumulated to prevent rounding errors
 			this.buffer[y * this.width + x] = color.getReverseHexColor();
 		});
+	}
+
+	randomStart () {
+		// For blurring
+		const hScaled = this.camera.rotMatrix.vectMul(this.camera.hRadius).mul((Math.random() * 2) - 1);
+		const vScaled = this.camera.rotMatrix.vectMul(this.camera.vRadius).mul((Math.random() * 2) - 1);
+		return this.camera.pos.add(hScaled).add(vScaled);
 	}
 
 	illuminationForHit (hit) {
@@ -125,9 +136,9 @@ export class RayTracing {
 		const planeMat = await Material.newMaterial('resources/checkerboard.png', 1, -1, 0.5);
 
 		this.scene = new Scene();
-		const sphere1 = new SphereObject(new Vector(3, -0.5, -0), 0.5, bricksMat);
+		const sphere1 = new SphereObject(new Vector(1, 0, 0), 0.5, bricksMat);
 		const sphere2 = new SphereObject(new Vector(3, 1, 0.5), 0.5, poolBallMat);
-		const sphere3 = new SphereObject(new Vector(3, -1, 1.5), 0.5, earthMat);
+		const sphere3 = new SphereObject(new Vector(6, -1, 1.5), 0.5, earthMat);
 		const sphere4 = new SphereObject(new Vector(4, 0.2, 1.5), 0.5, Material.newColorMaterial(ColorVector.white, 100, 0.25));
 		const plane1 = new PlaneObject(new Vector(0, 0, -1), new Vector(0, 0, 1), Infinity, planeMat);
 		const light1 = new PointLight(new Vector(2, 0, 2.5), 0.75);
@@ -141,6 +152,6 @@ export class RayTracing {
 		this.scene.addLight(light2);
 
 		const FOV = (60 / 360) * 2 * Math.PI;
-		this.camera = new Camera(new Vector(-2, 0, 1), Matrix.yawPitchRoll(0, 0, 0), FOV);
+		this.camera = new Camera(new Vector(-2, 0, 1), Matrix.yawPitchRoll(0, 0, 0), FOV, 0.1);
 	}
 }

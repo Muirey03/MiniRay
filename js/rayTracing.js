@@ -11,6 +11,7 @@ import { ColorVector } from './colorVector.js';
 import { reflectVectorInPlane } from './rayMath.js';
 import { Material } from './material.js';
 import { sphericalMap } from './textureMapping.js';
+import { pointAroundCircle } from './circleMath.js';
 
 export class RayTracing {
 	constructor (buffer, width, height) {
@@ -89,10 +90,10 @@ export class RayTracing {
 	}
 
 	renderScene () {
-		this.camera.iterateDirectionVectors(this.width, this.height, (dir) => {
+		this.camera.iterateDirectionVectors(this.width, this.height, (dir, sampleNum) => {
 			// Finds where the original ray would have hit the focus plane
 			const focusPoint = this.camera.pos.add(dir.mul(this.camera.focusDist / this.camera.forward.dot(dir)));
-			const startPoint = this.randomStart();
+			const startPoint = this.startPointForSample(sampleNum);
 			const toFocus = focusPoint.sub(startPoint).normalized();
 			const { hits, direction } = this.raytrace(startPoint, toFocus, this.NUM_RAY_BOUNCES);
 			let partialColor = this.skyMaterial.colorAtUV(sphericalMap(direction));
@@ -109,10 +110,10 @@ export class RayTracing {
 		});
 	}
 
-	randomStart () {
-		// For blurring
-		const hScaled = this.camera.rotMatrix.vectMul(this.camera.hRadius).mul((Math.random() * 2) - 1);
-		const vScaled = this.camera.rotMatrix.vectMul(this.camera.vRadius).mul((Math.random() * 2) - 1);
+	startPointForSample (sampleNum) {
+		const pointOnCircle = pointAroundCircle(sampleNum / this.camera.SAMPLECOUNT);
+		const hScaled = this.camera.rotMatrix.vectMul(this.camera.hRadius).mul(pointOnCircle.x * Math.random());
+		const vScaled = this.camera.rotMatrix.vectMul(this.camera.vRadius).mul(pointOnCircle.y * Math.random());
 		return this.camera.pos.add(hScaled).add(vScaled);
 	}
 

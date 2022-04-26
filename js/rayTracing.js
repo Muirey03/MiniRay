@@ -103,7 +103,7 @@ export class RayTracing {
 
 				partialColor = hitColor.mul(illumination).lerp(partialColor, hit.object.reflectivity);
 			});
-			return partialColor.mul(1 / this.camera.SAMPLECOUNT);
+			return partialColor;
 		}, (x, y, color) => {
 			// Seperate pixel colouring so color can be accumulated to prevent rounding errors
 			this.buffer[y * this.width + x] = color.getReverseHexColor();

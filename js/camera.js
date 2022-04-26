@@ -16,7 +16,7 @@ export class Camera {
 		this.forward = this.rotMatrix.vectMul(new Vector(1, 0, 0));
 		// Toggle antialiasing
 		this.antiAliasing = true;
-		this.SAMPLECOUNT = 20;
+		this.SAMPLECOUNT = 4;
 	}
 
 	iterateDirectionVectors (width, height, fn, color) {

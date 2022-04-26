@@ -5,9 +5,9 @@ export class Vector {
 		this.z = z;
 	}
 
-	static get zero () {
-		return new Vector(0, 0, 0);
-	}
+	// static get zero () {
+	// 	return new Vector(0, 0, 0);
+	// }
 
 	add (other) {
 		return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
@@ -33,12 +33,16 @@ export class Vector {
 	}
 
 	get magnitude () {
-		return this.distance(Vector.zero);
+		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
 	normalized (desiredMagnitude = 1) {
 		const mag = this.magnitude;
 		if (mag === 0) return Vector.zero;
-		return new Vector(this.x * desiredMagnitude / mag, this.y * desiredMagnitude / mag, this.z * desiredMagnitude / mag);
+		const scaleFactor = desiredMagnitude / mag;
+		return this.mul(scaleFactor);
 	}
 }
+
+const zeroVector = new Vector(0, 0, 0);
+Vector.zero = zeroVector;

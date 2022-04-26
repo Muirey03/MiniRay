@@ -32,12 +32,11 @@ export class Camera {
 						const xOffsetted = x + pointOnCircle.x / 2;
 						const yOffsetted = y + pointOnCircle.y / 2;
 						const dir = this.rotMatrix.vectMul(new Vector(1, (xOffsetted / width - 0.5) * viewWidth, (yOffsetted / height - 0.5) * viewHeight)).normalized();
-						overallColor = overallColor.add(fn(dir, sampleNum));
+						overallColor = overallColor.add(fn(dir, sampleNum).mul(1 / this.SAMPLECOUNT));
 					}
 				} else {
-					this.SAMPLECOUNT = 1;
 					const dir = this.rotMatrix.vectMul(new Vector(1, (x / width - 0.5) * viewWidth, (y / height - 0.5) * viewHeight));
-					overallColor = overallColor.add(fn(dir, 0));
+					overallColor = fn(dir, 0);
 				}
 				// higher points in the scene = lower values of y in the pixelBuffer:
 				color(x, height - 1 - y, overallColor);

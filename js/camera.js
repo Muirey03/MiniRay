@@ -16,7 +16,7 @@ export class Camera {
 		this.forward = this.rotMatrix.vectMul(new Vector(1, 0, 0));
 		// Toggle antialiasing
 		this.antiAliasing = true;
-		this.SAMPLECOUNT = 4;
+		this.SAMPLECOUNT = 20;
 	}
 
 	iterateDirectionVectors (width, height, fn, color) {
@@ -31,7 +31,7 @@ export class Camera {
 						const pointOnCircle = pointAroundCircle(sampleNum / this.SAMPLECOUNT);
 						const xOffsetted = x + pointOnCircle.x / 2;
 						const yOffsetted = y + pointOnCircle.y / 2;
-						const dir = this.rotMatrix.vectMul(new Vector(1, (xOffsetted / width - 0.5) * viewWidth, (yOffsetted / height - 0.5) * viewHeight)).normalized();
+						const dir = this.rotMatrix.vectMul(new Vector(1, (xOffsetted / width - 0.5) * viewWidth, (yOffsetted / height - 0.5) * viewHeight));
 						overallColor = overallColor.add(fn(dir, sampleNum).mul(1 / this.SAMPLECOUNT));
 					}
 				} else {

@@ -25,11 +25,12 @@ export class RayTracing {
 		(async () => {
 			this.skyMaterial = await Material.newMaterial('resources/sky.jpg', 1, -1, 0, 0.6);
 
-			// create our scene
 			await this.createScene();
 
-			// render:
+			const t0 = performance.now();
 			this.renderScene();
+			const t1 = performance.now();
+			console.log(`Rendered in ${t1 - t0}ms`);
 		})();
 	}
 
